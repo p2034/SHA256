@@ -8,11 +8,10 @@
  * @brief sha256 implementation
  */
 
-// for std::string output
-#include <string>
+
+
 #include <iomanip>
 #include <sstream>
-
 #include <cstring>
 #include <cstdint>
 #include <limits.h>   // for CHAR_BIT
@@ -21,7 +20,16 @@
 
 
 
-// https://stackoverflow.com/questions/776508/best-practices-for-circular-shift-rotate-operations-in-c
+/**
+ * @brief functions for rotate right (like right shift but with saving bits)
+ * 
+ * @param [in] n value we need to rotate
+ * @param [in] c number of turns
+ *
+ * @return updated value
+ *
+ * source: https://stackoverflow.com/questions/776508/best-practices-for-circular-shift-rotate-operations-in-c
+ */
 inline uint32_t SHA256::rightrotate(uint32_t n, unsigned int c) const {
   const unsigned int mask = (CHAR_BIT*sizeof(n) - 1);
   // assert ( (c<=mask) &&"rotate by type width or more");
@@ -31,10 +39,22 @@ inline uint32_t SHA256::rightrotate(uint32_t n, unsigned int c) const {
 
 
 
+/**
+ * @brief expands data (sha256)
+ * 
+ * @param [in] data data to be expanded
+ * @param [in] size data size
+ * @param [out] newSize size of expanded data
+ *
+ * @return updated data created using 'new' operator
+ *
+ * Add byte '10000000', add bytes so that the size is a multiple of 512, and set size of data 
+ * in the end (8 bytes);
+ */
 uint8_t* SHA256::preprocessor(const uint8_t* data, uint64_t size, uint64_t& newSize) const {
   newSize = size + 1 + SHA256_BLOCK_SIZE - ((size + 1) % SHA256_BLOCK_SIZE);
-
   uint8_t* newArray = new uint8_t[newSize];
+
   // set it to 10000000
   newArray[size] = SHA256_FIRST_ADDED_BYTE;
   // copy data
@@ -53,6 +73,47 @@ uint8_t* SHA256::preprocessor(const uint8_t* data, uint64_t size, uint64_t& newS
 
 
 
+/**
+ * @brief copy with big-little endian conversion
+ * 
+ * @param [out] dest data to be saved
+ * @param [in] src copyed data
+ * @param [in] srcSize size of copyed data
+ */
+void SHA256::copyWithEndianConversion(uint32_t* dest, const uint8_t* src, uint64_t srcSize) const {
+  for (int i = 0; i < srcSize; i++)
+      for (int j = 0; j < DIFF_32_8; j++)
+        std::memcpy((reinterpret_cast<uint8_t*>(dest) + i * DIFF_32_8 + j),
+                    &(src[i * DIFF_32_8 + (DIFF_32_8 - 1) - j]), sizeof(uint8_t));
+}
+
+
+
+/**
+ * @brief copy with big-little endian conversion
+ * 
+ * @param [out] dest data to be saved
+ * @param [in] src copyed data
+ * @param [in] srcSize size of copyed data
+ */
+void SHA256::copyWithEndianConversion(uint8_t* dest, const uint32_t* src, uint64_t srcSize) const {
+  for (int i = 0; i < srcSize; i++)
+    for (int j = 0; j < DIFF_32_8; j++)
+      std::memcpy(&(dest[i * DIFF_32_8 + j]), reinterpret_cast<const int8_t*>(&src[i]) + (DIFF_32_8 - 1) - j, sizeof(uint32_t));
+}
+
+
+
+/**
+ * @brief create sha256 hash
+ * 
+ * @param [in] data data to be hashed
+ * @param [in] size data size
+ *
+ * @return hash
+ *
+ * Main function in sha256 algorithm
+ */
 uint8_t* SHA256::get(const uint8_t* data, uint64_t size) const {
   uint8_t* eData; ///< adding up to 512 bits
   uint64_t newSize; ///< size of exteded data, newSize % 512 = 0
@@ -71,13 +132,9 @@ uint8_t* SHA256::get(const uint8_t* data, uint64_t size) const {
   for (int y = 0; y < numOfChunks; y++) {
     uint32_t* eeData = new uint32_t[SHA256_BLOCK_SIZE]; ///< data extended one more time
     // copy chunk, very strange way because of big-endian order in sha256
-    for (int i = 0; i < 16; i++)
-      for (int j = 0; j < 4; j++)
-        std::memcpy((reinterpret_cast<uint8_t*>(eeData) + i*4 + j),
-                    &(eData[y * SHA256_BLOCK_SIZE + i*4 + 3 - j]), sizeof(uint8_t));
-
+    copyWithEndianConversion(eeData, &(eData[y * SHA256_BLOCK_SIZE]), SHA256_BLOCK_SIZE/DIFF_32_8);
     // extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array
-    for (int i = (SHA256_BLOCK_SIZE / DIFFERENCE_32_8); i < SHA256_BLOCK_SIZE; i++) {
+    for (int i = (SHA256_BLOCK_SIZE / DIFF_32_8); i < SHA256_BLOCK_SIZE; i++) {
       uint32_t s0 = rightrotate(eeData[i - 15], 7) ^ rightrotate(eeData[i - 15], 18) ^ (eeData[i - 15] >> 3);
       uint32_t s1 = rightrotate(eeData[i - 2], 17) ^ rightrotate(eeData[i - 2], 19) ^ (eeData[i - 2] >> 10);
       eeData[i] = eeData[i - 16] + s0 + eeData[i - 7] + s1;
@@ -119,15 +176,22 @@ uint8_t* SHA256::get(const uint8_t* data, uint64_t size) const {
   delete[] eData;
 
   uint8_t* hash = new uint8_t[SHA256_HASH_SIZE];
-  for (int i = 0; i < SHA256_SQRT_NUM; i++)
-    for (int j = 0; j < 4; j++)
-      std::memcpy(&(hash[i * DIFFERENCE_32_8 + j]), reinterpret_cast<uint8_t*>(&h[i]) + 3 - j, sizeof(uint32_t));
-
+  copyWithEndianConversion(hash, h, SHA256_SQRT_NUM);
   return hash;
 }
 
 
 
+/**
+ * @brief create sha256 hash
+ * 
+ * @param [in] data data to be hashed
+ * @param [in] size data size
+ *
+ * @return hash
+ *
+ * Used SHA256::get to get hash in std::string hex format
+ */
 std::string SHA256::get_str(const uint8_t* data, uint64_t size) const {
   uint8_t* hash = this->get(data, size);
 

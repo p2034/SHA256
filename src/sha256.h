@@ -24,7 +24,9 @@
 // hash size in bytes
 #define SHA256_HASH_SIZE 32
 // 32/8
-#define DIFFERENCE_32_8 4
+#define DIFF_32_8 4
+
+
 
 /**
  * @class SHA256
@@ -34,7 +36,7 @@ class SHA256 {
 public:
   // get hash
   uint8_t* get(const uint8_t* data, uint64_t size) const;
-  // get hash in std::string
+  // get hash in std::string hex format
   std::string get_str(const uint8_t* data, uint64_t size) const;
 
 private:
@@ -56,7 +58,12 @@ private:
   // preliminary processing
   uint8_t* preprocessor(const uint8_t* data, uint64_t size, uint64_t& newSize) const;
 
+  // right rotate
   inline uint32_t rightrotate(uint32_t n, unsigned int c) const;
+
+  // copy with big-little endian conversion
+  void copyWithEndianConversion(uint8_t* dest, const uint32_t* src, uint64_t srcSize) const;
+  void copyWithEndianConversion(uint32_t* dest, const uint8_t* src, uint64_t srcSize) const;
 };
 
 

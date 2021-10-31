@@ -8,8 +8,8 @@ int main() {
   try {
     SHA256 sha256;
 
-    std::string str;
-    std::cin >> str;
+    std::string str = "hello world";
+    //std::cin >> str;
     uint64_t size = str.length();
     uint8_t* arr = new uint8_t[size];
 
