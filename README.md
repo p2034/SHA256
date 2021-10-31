@@ -1,4 +1,4 @@
-<h1>NEW_PROJECT</h1>
+<h1>SHA256</h1>
 
 <h2>Compile:</h2>
 

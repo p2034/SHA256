@@ -13,7 +13,7 @@ project(NEW_PROJECT)
 set(SRCDIR "../src/")
 
 # add your .cpp files here
-add_executable(test.out ../main.cpp)
+add_executable(test.out ../tests/test.cpp ../src/sha256.cpp)
 
 # add include directory
 target_include_directories(test.out PUBLIC ../src)
