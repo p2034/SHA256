@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief sha256 implementation
+ * @brief sha256 oop implementation
  */
 
 
@@ -41,8 +41,9 @@ public:
 
 private:
   // fractional parts of the square roots of the first primes
-  const uint32_t h_[SHA256_SQRT_NUM] = { 0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
-                                         0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19 };
+  const uint32_t h_[SHA256_SQRT_NUM] =
+  { 0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+    0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19 };
 
   // fractional parts of the cube roots of the first primes
   const uint32_t k_[SHA256_BLOCK_SIZE] =

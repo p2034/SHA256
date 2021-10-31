@@ -13,9 +13,9 @@ project(NEW_PROJECT)
 set(SRCDIR "../src/")
 
 # add your .cpp files here
-add_executable(test.out ../tests/test.cpp ../src/sha256.cpp)
+add_executable(test.out ../tests/test.cpp ../src/sha256/functional/sha256.cpp)
 
 # add include directory
-target_include_directories(test.out PUBLIC ../src)
+target_include_directories(test.out PUBLIC ../src/sha256/functional)
 
 target_link_libraries(test.out)

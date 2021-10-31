@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief sha256 implementation
+ * @brief sha256 oop implementation
  */
 
 

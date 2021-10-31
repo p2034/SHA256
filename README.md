@@ -6,7 +6,7 @@ This implementation is for getting 256-bit hash.
 
 <h2>Usage:</h2>
 
-To use it you must copy files from src and create object SHA256.
+There is two versions of sha256: oop (class SHA256) and functional (one function), copy one of them in your project.
 
 <h2>Compile:</h2>
 
