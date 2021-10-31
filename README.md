@@ -4,7 +4,7 @@ SHA-2 (Secure Hash Algorithm 2) is a set of cryptographic hash functions designe
 
 This implementation is for getting 256-bit hash.
 
-<h2>Usage:</2>
+<h2>Usage:</h2>
 
 To use it you must copy files from src and create object SHA256.
 
