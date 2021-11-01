@@ -6,7 +6,7 @@
 
 int main() {
   try {
-    std::string str = "hello world";
+    std::string str = "helloopasj;dfjsdbfklsbadfbklasdbfhasbdklfbsdfbsdbfsdjfjksdbjsdfasdfasdflsdjkfsnadjfhsdjkfsdjkfhsdjkfhdjkfhdjkfhdjkfhdjkfhdjk";
     //std::cin >> str;
     uint64_t size = str.length();
     uint8_t* arr = new uint8_t[size];
