@@ -198,5 +198,7 @@ std::string SHA256::get_str(const uint8_t* data, uint64_t size) const {
 	for(uint8_t i = 0 ; i < 32 ; i++)
 		s << std::setw(2) << (unsigned int) hash[i];
 
+  delete[] hash;
+
   return s.str();
 }

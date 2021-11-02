@@ -6,7 +6,7 @@
 
 int main() {
   try {
-    std::string str = "helloopasj;dfjsdbfklsbadfbklasdbfhasbdklfbsdfbsdbfsdjfjksdbjsdfasdfasdflsdjkfsnadjfhsdjkfsdjkfhsdjkfhdjkfhdjkfhdjkfhdjkfhdjk";
+    std::string str = "textjkdfhsgasbflsdkfbsadhjkfvasdhjkfvasdhjkfgvsdfvasdfgvkasdhfvasdghkfvgasdvfghkasdvfghasvhf";
     //std::cin >> str;
     uint64_t size = str.length();
     uint8_t* arr = new uint8_t[size];
@@ -17,6 +17,8 @@ int main() {
     std::string hash = sha256_str(arr, size);
 
     std::cout << hash << std::endl;
+
+    delete[] arr;
 
   } catch(const std::exception& excpt) {
     std::cout << excpt.what() << "\n";
