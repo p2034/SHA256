@@ -97,9 +97,17 @@ void SHA256::copyWithEndianConversion(uint32_t* dest, const uint8_t* src, uint64
  * @param [in] srcSize size of copyed data
  */
 void SHA256::copyWithEndianConversion(uint8_t* dest, const uint32_t* src, uint64_t srcSize) const {
+  /* this returns error on mac os
   for (int i = 0; i < srcSize; i++)
     for (int j = 0; j < DIFF_32_8; j++)
       std::memcpy(&(dest[i * DIFF_32_8 + j]), reinterpret_cast<const int8_t*>(&src[i]) + (DIFF_32_8 - 1) - j, sizeof(uint32_t));
+  */
+  
+  for (int i = 0; i < srcSize; i++) {
+    std::memcpy(&(dest[i * DIFF_32_8]), &(src[i]), sizeof(uint32_t));
+    swap(&(dest[i * DIFF_32_8]), &(dest[i * DIFF_32_8 + 3]));
+    swap(&(dest[i * DIFF_32_8 + 1]), &(dest[i * DIFF_32_8 + 2]));
+  }
 }
 
 
